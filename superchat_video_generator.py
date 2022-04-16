@@ -2,6 +2,7 @@ import os
 import json
 from moviepy.editor import *
 from datetime import datetime
+from datetime import timedelta
 
 
 class Video:
@@ -40,7 +41,7 @@ def video_split(video,superchat_comment):
         #TODO: 配信開始前のスパチャにも対応できるようにする
         if int(not '-' in i['time']):
             superchat_time = None
-
+            #TODO:共通化する
             if i['time'].count(':') == 1:
                 time = datetime.strptime(i['time'], '%M:%S')
                 superchat_time = time.minute * 60 +  time.second
@@ -57,9 +58,36 @@ def video_split(video,superchat_comment):
 def video_combine(video_list,name):
     concatenate_videoclips(video_list).write_videofile(name)
 
+def createabstract(superchat_comment,video_url):
+    #TODO: 文言を考える
+    abstract = open('abstract.txt', 'a',encoding='utf-8')
+    #TODO: 共通化する
+    a = 0
+    for i in superchat_comment:
+        if int(not '-' in i['time']):
+            superchat_time = None
+            if i['time'].count(':') == 1:
+                time = datetime.strptime(i['time'], '%M:%S')
+                superchat_time = time.minute * 60 +  time.second
+
+            elif i['time'].count(':') == 2:
+                time = datetime.strptime(i['time'], '%H:%M:%S')
+                superchat_time = time.hour * 3600 + time.minute * 60 +  time.second
+            #TODO: 成形する
+            abstract.write(str(timedelta(seconds = a)) + ' ' + i['user'] + 'さん' + ' ' + video_url + str(superchat_time) + 's\n')
+            a += 60
+    abstract.close()
+    pass
+
+def uploadVideo():
+    #TODO: Youtubeに自動アップロードするようにする
+    pass
+
 video = video_downloader()
 chat = chat_downloader()
 superchat_comment = extract_superchat_comment(chat)
 video_audio_recognize()
 video_list = video_split(video,superchat_comment)
 video_combine(video_list,'test.mp4')
+#TODO: videoのurlは外部から渡せるようにする
+user_list = createabstract(superchat_comment, 'https://www.youtube.com/watch?v=PF2ylueaAQU&t=')
