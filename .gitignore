@@ -1,3 +1,7 @@
 outputs/
 /__pycache__
 /.vscode
+*.mp4*
+*.mp3
+abstract.txt
+/test
