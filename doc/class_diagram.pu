@@ -1,0 +1,70 @@
+@startuml
+class Video{
+    String __name
+    String __path
+    String __extension
+    Clip __clip
+    Bool   upload(Detail)
+    Bool download(String)
+    Bool close()
+}
+
+class VideoEditor{
+    Video[] __video_list
+    Detail  __detail
+    self    __edit()
+    self    __combine()
+    self    clip(Chat[])
+    clip[]  getClip()
+}
+
+class Detail{
+    String   __title
+    String   __description
+    String[] __keyword
+    String   __category
+    String   __privacy_status
+}
+
+class DetailBuilder{
+    String   __title
+    String   __description
+    String[] __keyword
+    String   __category
+    String   __privacy_status
+    setTitle(String)
+    setDescription(String)
+    setKeyword(String[])
+    setCategory(String)
+    setPrivacyStatus(String)
+    makeUserList()
+}
+
+class Chat{
+    String __user
+    String __time
+    String __authorbadge
+    String __text
+    String __purchase_amount
+    Integer __seconds
+}
+
+class ChatBuilder{
+    String __path
+    String __video_id
+    Bool   __isBelowMinutes()
+    String __getSeconds()
+    Chat[] __create()
+    Bool   __isTimePotive()
+    Bool   __download()
+    Void   __register()
+}
+
+VideoEditor o-- Video
+Detail -- DetailBuilder
+ChatBuilder -- Chat
+Video -- Detail
+Chat -- DetailBuilder
+Chat -- VideoEditor
+
+@enduml

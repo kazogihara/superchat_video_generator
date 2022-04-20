@@ -1,0 +1,18 @@
+@startuml kirinuki_class_diagram
+title スパチャ切り抜き動画作成フロー図
+start
+:動画ダウンロード;
+label fix
+:チャット一覧作成;
+:スパチャ一覧作成;
+:動画切り抜き;
+:動画結合;
+:概要欄作成;
+:動画アップロード;
+if (目視チェックOK?) then (yes)
+:動画公開;
+else (no)
+:修正;
+endif
+stop
+@enduml
