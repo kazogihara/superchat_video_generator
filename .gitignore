@@ -5,3 +5,8 @@ outputs/
 *.mp3
 abstract.txt
 /test
+*.json
+description.txt
+/nene
+/ogya
+*.srt

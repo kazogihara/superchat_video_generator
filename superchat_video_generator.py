@@ -1,96 +1,281 @@
 import json
 from moviepy.editor import *
 from datetime import datetime
-from datetime import timedelta
+
+
 
 class Video:
-    name = None
-    extension = None
-    def __init__(self,name = 'default', extension = 'mp4'):
-        self.name = name
-        self.extension = extension
-    def getFileName(self):
-        return self.name + '.' + self.extension
+    def __init__(self, name, path, extension, clip = None):
+        self.__name = name
+        self.__path = path
+        self.__extension = extension
+        self.__filename = self.name + self.extension
+        self.__clip = clip
+    @property
+    def name(self):
+        return self.__name
     
+    @property
+    def fileName(self):
+        return self.__filename
 
-def getVideoFile():
-    #TODO: implement download process
-    downloaded_video = Video('nenemaru','mp4')
-    return downloaded_video
+    @property
+    def extension(self):
+        return self.__extension
 
-def getChatFile():
-    return './chatlog_replay_PF2ylueaAQU.json'
+    @property
+    def path(self):
+        return self.__path
 
-def extractSuperChatComment(chat):
-    chat_open = open(chat, 'r',encoding='utf-8')
-    chat_load = json.load(chat_open)
-    return [x for x in chat_load if x['purchaseAmount'] != '']
+    @property
+    def clip(self):
+        return self.__clip
 
-def getTranscription():
-    #TODO splitVideoFile後に文字おこしをする処理を入れる。
-    pass
+    def download(self, url):
+        #TODO: Implement video downloader
+        self.__clip = VideoFileClip(self.path)
+        return True
+
+    def upload(self, detail):
+        #TODO: Implement Video Uploader
+        return True
+
+    def close(self):
+        self.__clip.close()
+        return True
 
 
-def splitVideoFile(video,superchat_comment):
-    output_videos = []
-    #TODO:スパチャの内容の返答まで時間の幅をとれるようにしたい
-    time_range = 60
-    file_clipper = VideoFileClip('./' + video.getFileName())
-    for i in superchat_comment:
-        #TODO: 配信開始前のスパチャにも対応できるようにする
-        if int(not '-' in i['time']):
-            superchat_time = None
-            #TODO:共通化する
-            if i['time'].count(':') == 1:
-                time = datetime.strptime(i['time'], '%M:%S')
-                superchat_time = time.minute * 60 +  time.second
 
-            elif i['time'].count(':') == 2:
-                time = datetime.strptime(i['time'], '%H:%M:%S')
-                superchat_time = time.hour * 3600 + time.minute * 60 +  time.second
 
-            clip = file_clipper.subclip(superchat_time, superchat_time + time_range)
-            output_videos.append(clip)
-            concatenate_videoclips([clip]).write_videofile(video.name + str(superchat_time) + '_' + str(superchat_time + time_range) + '.' + video.extension, codec='libx264')
-    return output_videos
+class Detail:
+    def __init__(self, title, description, keyword, category, privacy_status):
+        self.__title = title
+        self.__description = description
+        self.__keyword = keyword
+        self.__category = category
+        self.__privacy_status = privacy_status
+    
+    @property
+    def title(self):
+        return self.__title
 
-def combineVideoFile(video_list,name):
-    concatenate_videoclips(video_list).write_videofile(name)
+    @property
+    def description(self):
+        return self.__description
 
-def createOverview(superchat_comment,video_url):
-    #TODO: 文言を考える(できればSEO対策とかしたい)
-    abstract = open('abstract.txt', 'w',encoding='utf-8')
-    #TODO: 共通化する
-    a = 0
-    for i in superchat_comment:
-        if int(not '-' in i['time']):
-            superchat_time = None
-            if i['time'].count(':') == 1:
-                time = datetime.strptime(i['time'], '%M:%S')
-                superchat_time = time.minute * 60 +  time.second
+    @property
+    def keyword(self):
+        return self.__keyword
 
-            elif i['time'].count(':') == 2:
-                time = datetime.strptime(i['time'], '%H:%M:%S')
-                superchat_time = time.hour * 3600 + time.minute * 60 +  time.second
+    @property
+    def category(self):
+        return self.__category
+
+    @property
+    def privacy_status(self):
+        return self.__privacy_status
+
+
+
+class DetailBuilder:
+    def __init__(self, title = None, description = None, keyword = None, category = None, privacy_status = None):
+        self.__title = title
+        self.__description = description
+        self.__keyword = keyword
+        self.__category = category
+        self.__privacy_status = privacy_status
+    
+    @property
+    def title(self):
+        return self.__title
+    
+    @title.setter
+    def title(self, arg):
+        self.__title = arg
+     
+    @property
+    def description(self):
+        return self.__description
+    
+    #TODO: Builderパターンに沿うようにする
+    def makeUserList(self, chat_list, url):
+        #TODO: 文言を考える(できればSEO対策とかしたい)
+        descirption = open('./description.txt', 'w',encoding='utf-8')
+        a = 0
+        for chat in chat_list:
             #TODO: 成形する
-            abstract.write(str(timedelta(seconds = a)) + ' ' + i['user'] + 'さん' + ' ' + video_url + str(superchat_time) + 's\n')
+            descirption.write(str(chat.time) + ' ' + chat.user + 'さん' + ' ' + url + str(chat.seconds) + 's\n')
             a += 60
-    abstract.close()
-    pass
+        descirption.close()
 
-def uploadVideo():
-    #TODO: Youtubeに自動アップロードするようにする
-    pass
+
+    @property
+    def keyword(self):
+        return self.__keyword
+    
+    @keyword.setter
+    def keyword(self, arg):
+        self.__keyword = arg
+
+    @property
+    def category(self):
+        return self.__category
+    
+    @category.setter
+    def category(self, arg):
+        self.__category = arg   
+
+    @property
+    def privacy_status(self):
+        return self.__privacy_status
+    
+    @privacy_status.setter
+    def privacy_status(self, arg):
+        self.__privacy_status = arg   
+
+    def construct(self):
+        #TODO: Implement With Uploader
+        return Detail(self.__title, self.__description, self.__keyword, self.__category, self.__privacy_status)
+
+
+class Chat:
+    def __init__(self, user, time, authorbadge, text, purchase_amount, seconds):
+        self.__user = user
+        self.__time = time
+        self.__authorbadge = authorbadge
+        self.__text = text
+        self.__purchase_amount = purchase_amount
+        self.__seconds = seconds
+    
+    @property
+    def user(self):
+        return self.__user
+        
+    @property
+    def time(self):
+        return self.__time
+
+    @property
+    def authorbadge(self):
+        return self.__authorbadge
+
+    @property
+    def text(self):
+        return self.__text
+
+    @property
+    def purchase_amount(self):
+        return self.__purchase_amount
+
+    @property
+    def seconds(self):
+        return self.__seconds
+
+
+
+class ChatBulder:
+    def __init__(self, video_id):
+        self.__video_id = video_id
+        self.__download()
+
+    def create(self):
+        self.__chat_list = []
+        with open(self.__file_path,'r',encoding='utf-8') as f:
+            for line in f:
+                s = json.loads(line)
+                chat = Chat(s['user'], s['time'], s['authorbadge'], s['text'], s['purchaseAmount'], self.__getSeconds(s['time']))
+                #TODO: 開始前のスパチャにも対応できるようにする
+                if(s['purchaseAmount'] != '' and self.__isPotiveTime(chat.time)):
+                    self.__register(chat)
+
+        return self.__chat_list
+    
+    def __getSeconds(self, time):
+        seconds = None
+
+        if self.__isBelowMinutes(time) and self.__isPotiveTime(time):
+            str_time = datetime.strptime(time, '%M:%S')
+            seconds = str_time.minute * 60 +  str_time.second
+
+        elif self.__isPotiveTime(time):
+            str_time = datetime.strptime(time, '%H:%M:%S')
+            seconds = str_time.hour * 3600 + str_time.minute * 60 +  str_time.second
+
+        elif not self.__isPotiveTime(time) and self.__isBelowMinutes(time):
+            str_time = datetime.strptime(time.strip('-'), '%M:%S')
+            seconds = (str_time.minute * 60 +  str_time.second) * -1
+
+        else:
+            str_time = datetime.strptime(time, '%H:%M:%S')
+            seconds = (str_time.hour * 3600 + str_time.minute * 60 +  str_time.second) * -1
+
+        return seconds
+
+    def __isBelowMinutes(self, time):
+        return time.count(':') == 1
+    
+    def __isPotiveTime(self, time):
+        return not '-' in time
+
+    def __download(self):
+        #TODO: 自動ダウンロードを実装
+        self.__file_path = './chatlog_replay_jiW29RDj5Tc.json'
+        return True
+
+    def __register(self,chat):
+        self.__chat_list.append(chat)
+
+
+
+class VideoEditor:
+    def __init__(self, detail, video):
+        self.detail = detail
+        self.video_list = [video]
+    
+    def edit(self):
+        #TODO: Implement edit feature
+        return self
+    
+    def combine(self, file_name):
+        clips = self.__getClip()
+        concatenate_videoclips(clips).write_videofile(file_name, codec='libx264')
+        return Video(file_name, './' + file_name, '.mp4')
+
+    def clip(self, chat_list):
+        new_video_list = []
+        #TODO:スパチャの内容の返答まで時間の幅をとれるようにしたい
+        time_range = 60
+        source = self.video_list[0]
+
+        for chat in chat_list:
+            #TODO: 配信開始前のスパチャにも対応できるようにする
+            new_clip = source.clip.subclip(chat.seconds, chat.seconds + time_range)
+            new_clip_name = source.name + str(chat.seconds) + '_' + str(chat.seconds + time_range) + '.' + source.extension
+            new_video_list.append(Video(new_clip_name, './' + new_clip_name, '.mp4', new_clip))
+            concatenate_videoclips([new_clip]).write_videofile(new_clip_name, codec='libx264')
+        
+        self.video_list = new_video_list
+        return self
+
+    def __getClip(self):
+        clip_list = []
+        for video in self.video_list:
+            clip_list.append(video.clip)
+        return clip_list
+
+
 
 def main():
-    video = getVideoFile()
-    chat = getChatFile()
-    superchat_comment = extractSuperChatComment(chat)
-    getTranscription()
-    video_list = splitVideoFile(video,superchat_comment)
-    combineVideoFile(video_list,'test.mp4')
-    #TODO: videoのurlは外部から渡せるようにする
-    user_list = createOverview(superchat_comment, 'https://www.youtube.com/watch?v=PF2ylueaAQU&t=')
+    chat_builder = ChatBulder('jiW29RDj5Tc')
+    chat = chat_builder.create()
+    detail_builder = DetailBuilder()
+    detail_builder.makeUserList(chat, 'https://www.youtube.com/watch?v=jiW29RDj5Tc&ab_channel=%E5%B0%8F%E5%9F%8E%E5%A4%9C%E3%81%BF%E3%82%8B%E3%81%8F')
+    detail = detail_builder.construct()
+    video = Video('ogya', './ogya.mp4', '.mp4')
+    video.download('test')
+    video_editor = VideoEditor(detail, video)
+    new_video = video_editor.clip(chat).combine('test.mp4')
+
 
 if __name__ == "__main__":
     main()
