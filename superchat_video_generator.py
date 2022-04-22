@@ -104,7 +104,7 @@ class DetailBuilder:
         a = 0
         for chat in chat_list:
             #TODO: 成形する
-            descirption.write(str(chat.time) + ' ' + chat.user + 'さん' + ' ' + url + str(chat.seconds) + 's\n')
+            descirption.write(str(chat.time) + ' ' + chat.user + 'さん' + ' ' + url + '&t=' + str(chat.seconds) + 's\n')
             a += 60
         descirption.close()
 
