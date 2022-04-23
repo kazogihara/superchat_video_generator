@@ -44,6 +44,14 @@ class Video:
         self.__clip.close()
         return True
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        return False
+
+    def __ne__(self, other):
+        return not isinstance(other, self.__class__)
+
 
 
 
@@ -75,6 +83,13 @@ class Detail:
     def privacy_status(self):
         return self.__privacy_status
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        return False
+
+    def __ne__(self, other):
+        return not isinstance(other, self.__class__)
 
 
 class DetailBuilder:
@@ -171,7 +186,13 @@ class Chat:
     def seconds(self):
         return self.__seconds
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        return False
 
+    def __ne__(self, other):
+        return not isinstance(other, self.__class__)
 
 class ChatBulder:
     def __init__(self, video_id):

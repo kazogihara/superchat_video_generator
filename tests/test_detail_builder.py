@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 from superchat_video_generator import Chat, DetailBuilder
 
 
-class DetailBuilderVideo(unittest.TestCase):
+class DetailBuildeTest(unittest.TestCase):
     
     def test_makeUserList_twoChatUser_twoDescriptionRow(self):
         description_mock = mock_open()
